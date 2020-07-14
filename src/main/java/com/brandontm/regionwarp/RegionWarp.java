@@ -25,11 +25,6 @@ public class RegionWarp extends JavaPlugin {
         registerCommands();
     }
 
-    @Override
-    public void onDisable() {
-        getLogger().info("RegionWarp stopped");
-    }
-
     private void registerCommands() {
         CommandExecutor regionWarpCommand = new RegionWarpCommand();
 
@@ -44,5 +39,14 @@ public class RegionWarp extends JavaPlugin {
         }
 
         return warpPointsFile;
+    }
+
+    public File getDiscoveredRegionsFile() {
+        final File discoveredRegionsFile = new File(getDataFolder(), "discoveredregions.yml");
+        if (!discoveredRegionsFile.exists()) {
+            saveResource("discoveredregions.yml", false);
+        }
+
+        return discoveredRegionsFile;
     }
 }
