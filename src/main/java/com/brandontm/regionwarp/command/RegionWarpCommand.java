@@ -1,4 +1,4 @@
-package com.brandontm.regionwarp.commands;
+package com.brandontm.regionwarp.command;
 
 import java.util.Optional;
 

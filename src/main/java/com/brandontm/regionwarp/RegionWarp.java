@@ -2,7 +2,7 @@ package com.brandontm.regionwarp;
 
 import java.io.File;
 
-import com.brandontm.regionwarp.commands.RegionWarpCommand;
+import com.brandontm.regionwarp.command.RegionWarpCommand;
 
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.plugin.java.JavaPlugin;
