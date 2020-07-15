@@ -65,6 +65,15 @@ public class WarpPointsConfig {
         return warpPoint;
     }
 
+    /**
+     * Add {@link WarpPoint} to Warp Points Config {@link FileConfiguration}
+     * 
+     * @param warpPoint Warp Point
+     * @return {@code AddStatus.CREATED} if Warp Point was created.
+     *         {@code AddStatus.REPLACED} if Warp Point was updated.
+     *         {@code AddStatus.FAILURE} if there was an error trying to save Warp
+     *         Point.
+     */
     public AddStatus addWarpPoint(WarpPoint warpPoint) {
 
         Location loc = warpPoint.getLocation();
@@ -93,6 +102,15 @@ public class WarpPointsConfig {
         return status;
     }
 
+    /**
+     * Remove warp point of region {@code regionId}
+     * 
+     * @param regionId Region Id
+     * @return {@code RemoveStatus.REMOVED} if removed successfully.
+     *         {@code RemoveStatus.NOT_EXISTS} if requested warp point does not
+     *         exist. {@code RemoveStatus.FAILURE} if there was an error trying to
+     *         remove warp point.
+     */
     public RemoveStatus removeWarpPoint(String regionId) {
         if (warpPointsConfig.contains(regionId)) {
             try {
@@ -121,6 +139,9 @@ public class WarpPointsConfig {
         return instance;
     }
 
+    /**
+     * 
+     */
     public enum AddStatus {
         CREATED, REPLACED, FAILURE
     }

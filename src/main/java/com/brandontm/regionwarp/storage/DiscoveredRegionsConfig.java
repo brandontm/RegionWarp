@@ -36,13 +36,20 @@ public class DiscoveredRegionsConfig {
         return discoveredRegionsConfig;
     }
 
+    /**
+     * Add a region discovery by player to Discovered Regions Config
+     * {@link FileConfiguration}
+     * 
+     * @param player   Player
+     * @param regionId Region Id
+     */
     public void addDiscoveredRegion(Player player, String regionId) {
-        Set<String> discoveredRegions = getDiscoveredRegions(player);
-        discoveredRegions.add(regionId);
+        Set<String> discoveredRegions = getRegionDiscoveries(regionId);
+        discoveredRegions.add(player.getUniqueId().toString());
 
         try {
             List<String> list = discoveredRegions.stream().collect(Collectors.toList());
-            getDiscoveredRegionsConfig().set(player.getUniqueId().toString(), list);
+            getDiscoveredRegionsConfig().set(regionId, list);
             getDiscoveredRegionsConfig().save(getDiscoveredRegionsFile());
         } catch (IOException ex) {
             RegionWarp.getInstance().getLogger()
@@ -52,17 +59,29 @@ public class DiscoveredRegionsConfig {
         }
     }
 
-    public Set<String> getDiscoveredRegions(Player player) {
-        Set<String> discoveredRegions = getDiscoveredRegionsConfig().isSet(player.getUniqueId().toString())
-                ? getDiscoveredRegionsConfig().getStringList(player.getUniqueId().toString()).stream()
-                        .collect(Collectors.toSet())
+    /**
+     * Gets a set of UUIDs of players that have discovered the specified region
+     * 
+     * @param regionId Region id
+     * @return List of player UUIDs
+     */
+    public Set<String> getRegionDiscoveries(String regionId) {
+        Set<String> discoveredRegions = getDiscoveredRegionsConfig().isSet(regionId)
+                ? getDiscoveredRegionsConfig().getStringList(regionId).stream().collect(Collectors.toSet())
                 : new HashSet<>();
 
         return discoveredRegions;
     }
 
+    /**
+     * Returns true if the player has discovered the region
+     * 
+     * @param player   Player
+     * @param regionId Region Id
+     * @return true if player has discovered the region
+     */
     public boolean hasDiscoveredRegion(Player player, String regionId) {
-        return getDiscoveredRegions(player).contains(regionId);
+        return getRegionDiscoveries(regionId).contains(player.getUniqueId().toString());
     }
 
     public static DiscoveredRegionsConfig getInstance() {
