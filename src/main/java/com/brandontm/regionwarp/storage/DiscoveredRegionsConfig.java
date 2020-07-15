@@ -37,13 +37,27 @@ public class DiscoveredRegionsConfig {
     }
 
     /**
+     * Gets a set of UUIDs of players that have discovered the specified region
+     * 
+     * @param regionId Region id
+     * @return List of player UUIDs
+     */
+    public Set<String> getRegionDiscoveries(String regionId) {
+        Set<String> discoveredRegions = getDiscoveredRegionsConfig().isSet(regionId)
+                ? getDiscoveredRegionsConfig().getStringList(regionId).stream().collect(Collectors.toSet())
+                : new HashSet<>();
+
+        return discoveredRegions;
+    }
+
+    /**
      * Add a region discovery by player to Discovered Regions Config
      * {@link FileConfiguration}
      * 
      * @param player   Player
      * @param regionId Region Id
      */
-    public void addDiscoveredRegion(Player player, String regionId) {
+    public void addRegionDiscovery(Player player, String regionId) {
         Set<String> discoveredRegions = getRegionDiscoveries(regionId);
         discoveredRegions.add(player.getUniqueId().toString());
 
@@ -59,18 +73,16 @@ public class DiscoveredRegionsConfig {
         }
     }
 
-    /**
-     * Gets a set of UUIDs of players that have discovered the specified region
-     * 
-     * @param regionId Region id
-     * @return List of player UUIDs
-     */
-    public Set<String> getRegionDiscoveries(String regionId) {
-        Set<String> discoveredRegions = getDiscoveredRegionsConfig().isSet(regionId)
-                ? getDiscoveredRegionsConfig().getStringList(regionId).stream().collect(Collectors.toSet())
-                : new HashSet<>();
-
-        return discoveredRegions;
+    public void removeRegionDiscoveries(String regionId) {
+        getDiscoveredRegionsConfig().set(regionId, null);
+        try {
+            getDiscoveredRegionsConfig().save(getDiscoveredRegionsFile());
+        } catch (IOException ex) {
+            RegionWarp.getInstance().getLogger()
+                    .severe("Hubo un error al intentar remover los descubrimientos de una región."
+                            + " Puede ser un error interno del plugin o del servidor."
+                            + " Contactar a Brandon si sucede con frecuencia");
+        }
     }
 
     /**

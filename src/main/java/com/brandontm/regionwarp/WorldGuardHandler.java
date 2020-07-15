@@ -67,7 +67,7 @@ public class WorldGuardHandler extends Handler {
                 player.sendActionBar(ChatColor.GOLD + description);
 
                 if (!discoveredRegionsConfig.hasDiscoveredRegion(player, region.getId())) {
-                    discoveredRegionsConfig.addDiscoveredRegion(player, region.getId());
+                    discoveredRegionsConfig.addRegionDiscovery(player, region.getId());
 
                     player.sendMessage(ChatColor.AQUA + "Has descubierto la región " + ChatColor.BOLD.toString()
                             + ChatColor.GOLD.toString() + regionNameFormatted + ".");

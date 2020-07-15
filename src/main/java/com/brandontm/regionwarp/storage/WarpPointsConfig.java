@@ -117,6 +117,8 @@ public class WarpPointsConfig {
                 warpPointsConfig.set(regionId, null);
                 this.warpPointsConfig.save(getWarpPointsFile());
 
+                DiscoveredRegionsConfig.getInstance().removeRegionDiscoveries(regionId);
+
                 return RemoveStatus.REMOVED;
             } catch (IOException ex) {
                 RegionWarp.getInstance().getLogger()
