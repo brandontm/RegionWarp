@@ -24,7 +24,7 @@ public class RegionWarpCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (args.length != 2) {
+        if (args.length < 2) {
             return false;
         }
 
@@ -39,6 +39,17 @@ public class RegionWarpCommand implements CommandExecutor {
                 return true;
             }
 
+            if (!(args.length > 2)) {
+                return false;
+            }
+
+            // Every argument after the second is part of the description
+            String description = "";
+            for (int i = 2; i < args.length; i++) {
+                description += " " + args[i];
+            }
+            description = description.trim();
+
             final Player player = (Player) sender;
             final Location location = player.getLocation();
 
@@ -50,7 +61,7 @@ public class RegionWarpCommand implements CommandExecutor {
                     .filter((r) -> r.getId().equals(regionName)).findAny();
 
             if (region.isPresent()) {
-                WarpPoint warpPoint = new WarpPoint(region.get(), player.getLocation());
+                WarpPoint warpPoint = new WarpPoint(region.get(), player.getLocation(), description);
 
                 WarpPointsConfig.AddStatus addStatus = warpPointsConfig.addWarpPoint(warpPoint);
 
@@ -77,6 +88,10 @@ public class RegionWarpCommand implements CommandExecutor {
 
             return true;
         } else if ("remove".equals(operation)) {
+            if (args.length != 2) {
+                return false;
+            }
+
             if (sender instanceof Player) {
                 Player player = (Player) sender;
                 if (!player.hasPermission("regionwarp.warp.remove")) {

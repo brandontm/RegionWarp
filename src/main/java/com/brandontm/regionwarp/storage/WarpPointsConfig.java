@@ -50,6 +50,7 @@ public class WarpPointsConfig {
         warpPointsConfig.set(String.format("%s.y", regionId), loc.getY());
         warpPointsConfig.set(String.format("%s.z", regionId), loc.getZ());
         warpPointsConfig.set(String.format("%s.yaw", regionId), loc.getYaw());
+        warpPointsConfig.set(String.format("%s.description", regionId), warpPoint.getDescription());
 
         try {
             this.warpPointsConfig.save(getWarpPointsFile());

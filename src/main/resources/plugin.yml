@@ -8,7 +8,7 @@ depend: [WorldGuard]
 commands:
   regionWarp:
     description: Set or remove region warp point
-    usage: /regionwarp <set|remove> <regionName>
+    usage: /regionwarp <set|remove> <regionName> [description...]
     aliases: [rw]
     permission: regionwarp.warp.modify
     permission-message: No tienes permiso para user este comando
