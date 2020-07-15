@@ -3,6 +3,7 @@ package com.brandontm.regionwarp.storage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -40,7 +41,8 @@ public class DiscoveredRegionsConfig {
         discoveredRegions.add(regionId);
 
         try {
-            getDiscoveredRegionsConfig().set(player.getUniqueId().toString(), discoveredRegions);
+            List<String> list = discoveredRegions.stream().collect(Collectors.toList());
+            getDiscoveredRegionsConfig().set(player.getUniqueId().toString(), list);
             getDiscoveredRegionsConfig().save(getDiscoveredRegionsFile());
         } catch (IOException ex) {
             RegionWarp.getInstance().getLogger()
@@ -57,6 +59,10 @@ public class DiscoveredRegionsConfig {
                 : new HashSet<>();
 
         return discoveredRegions;
+    }
+
+    public boolean hasDiscoveredRegion(Player player, String regionId) {
+        return getDiscoveredRegions(player).contains(regionId);
     }
 
     public static DiscoveredRegionsConfig getInstance() {

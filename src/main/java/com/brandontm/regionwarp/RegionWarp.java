@@ -3,6 +3,7 @@ package com.brandontm.regionwarp;
 import java.io.File;
 
 import com.brandontm.regionwarp.command.RegionWarpCommand;
+import com.sk89q.worldguard.WorldGuard;
 
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -20,7 +21,14 @@ public class RegionWarp extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        getLogger().info("RegionWarp started");
+        if (!WorldGuard.getInstance().getPlatform().getSessionManager().registerHandler(WorldGuardHandler.factory,
+                null)) {
+            getLogger().severe("[RegionWarp] No se pudo registrar RegionWarp WorldGuardHandler");
+            getLogger().severe("[RegionWarp] Se desactivara el plugin");
+
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
 
         registerCommands();
     }
