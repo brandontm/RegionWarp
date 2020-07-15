@@ -5,8 +5,14 @@ import java.io.IOException;
 
 import com.brandontm.regionwarp.RegionWarp;
 import com.brandontm.regionwarp.WarpPoint;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
 
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -36,6 +42,26 @@ public class WarpPointsConfig {
 
     public WarpPoint getWarpPoint(String regionId) {
         WarpPoint warpPoint = null;
+
+        if (getWarpPointsConfig().isSet(regionId)) {
+            String w = getWarpPointsConfig().getString(String.format("%s.world", regionId));
+            World world = RegionWarp.getInstance().getServer().getWorld(w);
+            double x = getWarpPointsConfig().getDouble(String.format("%s.x", regionId));
+            double y = getWarpPointsConfig().getDouble(String.format("%s.y", regionId));
+            double z = getWarpPointsConfig().getDouble(String.format("%s.z", regionId));
+            float yaw = (float) getWarpPointsConfig().getDouble(String.format("%s.yaw", regionId));
+
+            String description = getWarpPointsConfig().getString(String.format("%s.description", regionId));
+
+            Location location = new Location(world, x, y, z, yaw, 0f);
+
+            RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+            RegionManager regions = container.get(BukkitAdapter.adapt(world));
+            ProtectedRegion region = regions.getRegion(regionId);
+
+            warpPoint = new WarpPoint(region, location, description);
+        }
+
         return warpPoint;
     }
 
@@ -46,6 +72,7 @@ public class WarpPointsConfig {
 
         AddStatus status = warpPointsConfig.contains(regionId) ? AddStatus.REPLACED : AddStatus.CREATED;
 
+        warpPointsConfig.set(String.format("%s.world", regionId), loc.getWorld().getName());
         warpPointsConfig.set(String.format("%s.x", regionId), loc.getX());
         warpPointsConfig.set(String.format("%s.y", regionId), loc.getY());
         warpPointsConfig.set(String.format("%s.z", regionId), loc.getZ());
