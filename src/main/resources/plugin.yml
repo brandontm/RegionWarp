@@ -1,6 +1,7 @@
 main: com.brandontm.regionwarp.RegionWarp
 name: RegionWarp
 version: 0.1
+api-version: 1.15
 
 depend: [WorldGuard]
 
