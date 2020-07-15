@@ -3,6 +3,7 @@ package com.brandontm.regionwarp;
 import java.util.Set;
 
 import com.brandontm.regionwarp.storage.DiscoveredRegionsConfig;
+import com.brandontm.regionwarp.storage.WarpPointsConfig;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
@@ -39,31 +40,40 @@ public class WorldGuardHandler extends Handler {
 
         DiscoveredRegionsConfig discoveredRegionsConfig = DiscoveredRegionsConfig.getInstance();
         for (ProtectedRegion region : entered) {
-            Player player = RegionWarp.getInstance().getServer().getPlayer(lPlayer.getUniqueId());
+            WarpPointsConfig warpPointsConfig = WarpPointsConfig.getInstance();
+            if (warpPointsConfig.getWarpPointsConfig().isSet(region.getId())) {
+                Player player = RegionWarp.getInstance().getServer().getPlayer(lPlayer.getUniqueId());
 
-            String regionNameFormatted = "";
-            // Capitalize region name and replace _ and - with spaces
-            if (region.getId().length() > 0) {
-                if (region.getId().length() == 1)
-                    regionNameFormatted = region.getId().toUpperCase();
-                else
-                    regionNameFormatted = region.getId().substring(0, 1).toUpperCase() + region.getId().substring(1);
+                String regionNameFormatted = "";
+                // Capitalize region name and replace _ and - with spaces
+                if (region.getId().length() > 0) {
+                    if (region.getId().length() == 1)
+                        regionNameFormatted = region.getId().toUpperCase();
+                    else
+                        regionNameFormatted = region.getId().substring(0, 1).toUpperCase()
+                                + region.getId().substring(1);
 
-                regionNameFormatted = regionNameFormatted.replaceAll("[-_]", " ");
-            }
+                    regionNameFormatted = regionNameFormatted.replaceAll("[-_]", " ");
+                }
 
-            StringBuilder strBuilder = new StringBuilder();
-            strBuilder.append(ChatColor.AQUA);
-            strBuilder.append(ChatColor.BOLD);
-            strBuilder.append(regionNameFormatted);
-            String subtitle = strBuilder.toString();
+                StringBuilder strBuilder = new StringBuilder();
+                strBuilder.append(ChatColor.AQUA);
+                strBuilder.append(ChatColor.BOLD);
+                strBuilder.append(regionNameFormatted);
+                String subtitle = strBuilder.toString();
+                String description = warpPointsConfig.getWarpPoint(region.getId()).getDescription();
 
-            player.sendTitle("", subtitle, 10, 50, 10);
-            player.sendActionBar(
-                    ChatColor.GOLD + "Ahora puedes viajar a esta región desde cualquier punto de viaje rápido");
+                player.sendTitle("", subtitle, 10, 50, 10);
+                player.sendActionBar(ChatColor.GOLD + description);
 
-            if (!discoveredRegionsConfig.hasDiscoveredRegion(player, region.getId())) {
-                discoveredRegionsConfig.addDiscoveredRegion(player, region.getId());
+                if (!discoveredRegionsConfig.hasDiscoveredRegion(player, region.getId())) {
+                    discoveredRegionsConfig.addDiscoveredRegion(player, region.getId());
+
+                    player.sendMessage(ChatColor.AQUA + "Has descubierto la región " + ChatColor.BOLD.toString()
+                            + ChatColor.GOLD.toString() + regionNameFormatted + ".");
+                    player.sendMessage(ChatColor.AQUA
+                            + "Ahora puedes viajar a esta región desde cualquier punto de viaje rápido.");
+                }
             }
         }
         return true;
