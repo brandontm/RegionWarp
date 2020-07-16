@@ -12,6 +12,9 @@ commands:
     aliases: [rw]
     permission: regionwarp.warp.modify
     permission-message: No tienes permiso para user este comando
+  test:
+    description: Test command
+    usage: /test
 
 permissions:
   regionwarp.warp.modify:

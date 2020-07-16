@@ -2,5 +2,5 @@
 
 # Item que será cobrado al usuario por cada viaje rápido
 teleportcharge:
-    item: minecraft:dirt
+    item: dirt
     quantity: 1

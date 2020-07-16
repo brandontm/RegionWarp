@@ -40,6 +40,12 @@ public class WarpPointsConfig {
         return warpPointsConfig;
     }
 
+    /**
+     * Gets warp point with id {@code regionId}
+     * 
+     * @param regionId Region id
+     * @return Warp point with id {@code regionId} or null if not found
+     */
     public WarpPoint getWarpPoint(String regionId) {
         WarpPoint warpPoint = null;
 
