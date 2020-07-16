@@ -9,6 +9,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class RegionWarp extends JavaPlugin {
+    public final File configFile = new File(getDataFolder(), "config.yml");
+
     private static RegionWarp instance;
 
     public RegionWarp() {
@@ -23,11 +25,17 @@ public class RegionWarp extends JavaPlugin {
     public void onEnable() {
         if (!WorldGuard.getInstance().getPlatform().getSessionManager().registerHandler(WorldGuardHandler.factory,
                 null)) {
+
             getLogger().severe("[RegionWarp] No se pudo registrar RegionWarp WorldGuardHandler");
             getLogger().severe("[RegionWarp] Se desactivara el plugin");
 
             getServer().getPluginManager().disablePlugin(this);
             return;
+        }
+
+        // Init config.yml file
+        if (!configFile.exists()) {
+            saveResource("config.yml", false);
         }
 
         registerCommands();
