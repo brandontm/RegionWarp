@@ -44,6 +44,7 @@ public class WorldGuardHandler extends Handler {
             if (warpPointsConfig.getWarpPointsConfig().isSet(region.getId())) {
                 Player player = RegionWarp.getInstance().getServer().getPlayer(lPlayer.getUniqueId());
 
+                // TODO format using WordUtils
                 String regionNameFormatted = "";
                 // Capitalize region name and replace _ and - with spaces
                 if (region.getId().length() > 0) {

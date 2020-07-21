@@ -3,6 +3,8 @@ package com.brandontm.regionwarp;
 import java.io.File;
 
 import com.brandontm.regionwarp.command.RegionWarpCommand;
+import com.brandontm.regionwarp.event.BlockListener;
+import com.brandontm.regionwarp.event.SignChangeListener;
 import com.brandontm.regionwarp.storage.WarpPointsConfig;
 import com.sk89q.worldguard.WorldGuard;
 
@@ -12,12 +14,13 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class RegionWarp extends JavaPlugin {
-    public final File configFile = new File(getDataFolder(), "config.yml");
+    private final File configFile = new File(getDataFolder(), "config.yml");
 
     private static RegionWarp instance;
 
@@ -42,11 +45,18 @@ public class RegionWarp extends JavaPlugin {
         }
 
         // Init config.yml file
-        if (!configFile.exists()) {
-            saveResource("config.yml", false);
-        }
+        saveDefaultConfig();
+        reloadConfig();
 
         registerCommands();
+        registerEvents();
+    }
+
+    private void registerEvents() {
+        PluginManager pManager = getServer().getPluginManager();
+
+        pManager.registerEvents(new SignChangeListener(), this);
+        pManager.registerEvents(new BlockListener(), this);
     }
 
     private void registerCommands() {
