@@ -1,8 +1,11 @@
 package com.brandontm.regionwarp;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import com.brandontm.regionwarp.storage.WarpPointsConfig;
 
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -13,6 +16,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 /**
  * RegionMenu
@@ -22,14 +26,11 @@ public class RegionMenu {
 
     public static void openMenu(HumanEntity who) {
         createInventory(who);
-
-        final Inventory inventory = getInventory(who);
-        if (inventory != null)
-            who.openInventory(inventory);
     }
 
     public static void createInventory(HumanEntity who) {
-        inventories.put(who.getUniqueId(), RegionWarp.getInstance().getServer().createInventory(null, 9, "Regiones"));
+        final Inventory inventory = RegionWarp.getInstance().getServer().createInventory(null, 9, "Regiones");
+        inventories.put(who.getUniqueId(), inventory);
 
         draw(who);
     }
@@ -37,7 +38,20 @@ public class RegionMenu {
     public static void draw(HumanEntity who) {
         final Inventory inventory = getInventory(who);
 
-        inventory.addItem(new ItemStack(Material.DIAMOND));
+        for (WarpPoint point : WarpPointsConfig.getInstance().getAllWarpPoints()) {
+            ItemStack item = new ItemStack(Material.DIAMOND);
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName(point.getTitle());
+            meta.setLore(Arrays.asList(point.getDescription()));
+
+            item.setItemMeta(meta);
+
+            inventory.addItem(item);
+        }
+
+        if (inventory != null)
+            who.openInventory(inventory);
+
     }
 
     public static Inventory getInventory(HumanEntity who) {

@@ -2,6 +2,8 @@ package com.brandontm.regionwarp.storage;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.brandontm.regionwarp.RegionWarp;
 import com.brandontm.regionwarp.WarpPoint;
@@ -38,6 +40,37 @@ public class WarpPointsConfig {
 
     public FileConfiguration getWarpPointsConfig() {
         return warpPointsConfig;
+    }
+
+    /**
+     * Get all warp points in config
+     * 
+     * @return A list of all warp point registered in warppoints config
+     */
+    public List<WarpPoint> getAllWarpPoints() {
+        List<WarpPoint> warpPoints = new ArrayList<>();
+
+        for (final String regionId : getWarpPointsConfig().getKeys(false)) {
+
+            String w = getWarpPointsConfig().getString(String.format("%s.world", regionId));
+            World world = RegionWarp.getInstance().getServer().getWorld(w);
+            double x = getWarpPointsConfig().getDouble(String.format("%s.x", regionId));
+            double y = getWarpPointsConfig().getDouble(String.format("%s.y", regionId));
+            double z = getWarpPointsConfig().getDouble(String.format("%s.z", regionId));
+            float yaw = (float) getWarpPointsConfig().getDouble(String.format("%s.yaw", regionId));
+
+            String description = getWarpPointsConfig().getString(String.format("%s.description", regionId));
+
+            Location location = new Location(world, x, y, z, yaw, 0f);
+
+            RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+            RegionManager regions = container.get(BukkitAdapter.adapt(world));
+            ProtectedRegion region = regions.getRegion(regionId);
+
+            warpPoints.add(new WarpPoint(region, location, description));
+        }
+
+        return warpPoints;
     }
 
     /**

@@ -82,7 +82,7 @@ public class RegionWarp extends JavaPlugin {
                 String itemName = config.getString("teleportcharge.item");
                 int quantity = config.getInt("teleportcharge.quantity");
 
-                // TODO check if its actually configured or its set to free
+                // TODO check if its actually configured or set to free
                 if (itemName == null || quantity == 0)
                     return true; // Teleport charge might not be configured
 
