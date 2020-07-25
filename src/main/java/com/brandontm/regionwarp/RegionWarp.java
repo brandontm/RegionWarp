@@ -4,6 +4,7 @@ import java.io.File;
 
 import com.brandontm.regionwarp.command.RegionWarpCommand;
 import com.brandontm.regionwarp.event.BlockListener;
+import com.brandontm.regionwarp.event.PlayerInteractListener;
 import com.brandontm.regionwarp.event.SignChangeListener;
 import com.brandontm.regionwarp.storage.WarpPointsConfig;
 import com.sk89q.worldguard.WorldGuard;
@@ -57,6 +58,8 @@ public class RegionWarp extends JavaPlugin {
 
         pManager.registerEvents(new SignChangeListener(), this);
         pManager.registerEvents(new BlockListener(), this);
+        pManager.registerEvents(new PlayerInteractListener(), this);
+        pManager.registerEvents(new RegionMenu.InventoryListener(), this);
     }
 
     private void registerCommands() {

@@ -9,6 +9,7 @@ import org.bukkit.event.block.SignChangeEvent;
 public class SignChangeListener implements Listener {
     @EventHandler
     public void onSignChange(SignChangeEvent event) {
+        // TODO move RegionWarp sign creation to command and store
         if ("[regionwarp]".equals(event.getLine(0).trim().toLowerCase())
                 || "[rw]".equals(event.getLine(0).trim().toLowerCase())) {
 
