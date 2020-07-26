@@ -1,24 +1,34 @@
 package com.brandontm.regionwarp;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Location;
 
 public class WarpPoint {
-    private String title;
     private ProtectedRegion region;
     private Location location;
     private String description;
+    private Set<String> discoveredBy;
 
     public WarpPoint() {
     }
 
     public WarpPoint(ProtectedRegion region, Location location, String description) {
-        this.title = WordUtils.capitalizeFully(region.getId().replaceAll("[-_]", " "));
         this.region = region;
         this.location = location;
         this.description = description;
+        this.discoveredBy = new HashSet<>();
+    }
+
+    public WarpPoint(ProtectedRegion region, Location location, String description, Set<String> discoveredBy) {
+        this.region = region;
+        this.location = location;
+        this.description = description;
+        this.discoveredBy = discoveredBy;
     }
 
     /**
@@ -27,7 +37,7 @@ public class WarpPoint {
      * @return user friendly region name
      */
     public String getTitle() {
-        return title;
+        return WordUtils.capitalizeFully(region.getId().replaceAll("[-_]", " "));
     }
 
     public ProtectedRegion getRegion() {
@@ -52,5 +62,13 @@ public class WarpPoint {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Set<String> getDiscoveredBy() {
+        return discoveredBy;
+    }
+
+    public void setDiscoveredBy(Set<String> discoveredBy) {
+        this.discoveredBy = discoveredBy;
     }
 }

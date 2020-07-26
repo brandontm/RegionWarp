@@ -2,7 +2,6 @@ package com.brandontm.regionwarp;
 
 import java.util.Set;
 
-import com.brandontm.regionwarp.storage.DiscoveredRegionsConfig;
 import com.brandontm.regionwarp.storage.WarpPointsConfig;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldguard.LocalPlayer;
@@ -38,7 +37,6 @@ public class WorldGuardHandler extends Handler {
     public boolean onCrossBoundary(LocalPlayer lPlayer, Location from, Location to, ApplicableRegionSet toSet,
             Set<ProtectedRegion> entered, Set<ProtectedRegion> exited, MoveType moveType) {
 
-        DiscoveredRegionsConfig discoveredRegionsConfig = DiscoveredRegionsConfig.getInstance();
         for (ProtectedRegion region : entered) {
             WarpPointsConfig warpPointsConfig = WarpPointsConfig.getInstance();
             if (warpPointsConfig.getWarpPointsConfig().isSet(region.getId())) {
@@ -67,8 +65,8 @@ public class WorldGuardHandler extends Handler {
                 player.sendTitle("", subtitle, 10, 50, 10);
                 player.sendActionBar(ChatColor.GOLD + description);
 
-                if (!discoveredRegionsConfig.hasDiscoveredRegion(player, region.getId())) {
-                    discoveredRegionsConfig.addRegionDiscovery(player, region.getId());
+                if (!warpPointsConfig.hasDiscoveredRegion(player, region.getId())) {
+                    warpPointsConfig.addRegionDiscovery(player, region.getId());
 
                     player.sendMessage(ChatColor.AQUA + "Has descubierto la región " + ChatColor.BOLD.toString()
                             + ChatColor.GOLD.toString() + regionNameFormatted + ".");

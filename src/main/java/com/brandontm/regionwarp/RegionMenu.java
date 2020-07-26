@@ -11,6 +11,7 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -79,6 +80,11 @@ public class RegionMenu {
             final Inventory inventory = RegionMenu.getInventory(who);
 
             if (event.getInventory().equals(inventory) && event.getCurrentItem() != null) {
+                event.setCancelled(true);
+
+                if (!(who instanceof Player))
+                    return;
+
                 ItemMeta meta = event.getCurrentItem().getItemMeta();
                 if (meta == null || !meta.getPersistentDataContainer()
                         .has(new NamespacedKey(RegionWarp.getInstance(), "regionid"), PersistentDataType.STRING))
@@ -86,6 +92,9 @@ public class RegionMenu {
 
                 String regionId = meta.getPersistentDataContainer()
                         .get(new NamespacedKey(RegionWarp.getInstance(), "regionid"), PersistentDataType.STRING);
+
+                if (!WarpPointsConfig.getInstance().hasDiscoveredRegion((Player) who, regionId))
+                    return;
 
                 FileConfiguration config = RegionWarp.getInstance().getConfig();
 
@@ -106,8 +115,6 @@ public class RegionMenu {
 
                     who.teleport(warpPoint.getLocation());
                 }
-
-                event.setCancelled(true);
             } else {
                 // FIXME sometimes inventory is not detected in listener for some reason and
                 // items can be taken out from regionmenu inventory

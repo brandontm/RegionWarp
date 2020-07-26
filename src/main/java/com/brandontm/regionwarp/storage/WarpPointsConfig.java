@@ -3,7 +3,10 @@ package com.brandontm.regionwarp.storage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.brandontm.regionwarp.RegionWarp;
 import com.brandontm.regionwarp.WarpPoint;
@@ -17,6 +20,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 /**
  * WarpPointsConfig
@@ -58,16 +62,18 @@ public class WarpPointsConfig {
             double y = getWarpPointsConfig().getDouble(String.format("%s.y", regionId));
             double z = getWarpPointsConfig().getDouble(String.format("%s.z", regionId));
             float yaw = (float) getWarpPointsConfig().getDouble(String.format("%s.yaw", regionId));
+            Location location = new Location(world, x, y, z, yaw, 0f);
 
             String description = getWarpPointsConfig().getString(String.format("%s.description", regionId));
 
-            Location location = new Location(world, x, y, z, yaw, 0f);
+            Set<String> discoveredBy = getWarpPointsConfig().getStringList(String.format("%s.discoveredby", regionId))
+                    .stream().collect(Collectors.toSet());
 
             RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
             RegionManager regions = container.get(BukkitAdapter.adapt(world));
             ProtectedRegion region = regions.getRegion(regionId);
 
-            warpPoints.add(new WarpPoint(region, location, description));
+            warpPoints.add(new WarpPoint(region, location, description, discoveredBy));
         }
 
         return warpPoints;
@@ -89,16 +95,18 @@ public class WarpPointsConfig {
             double y = getWarpPointsConfig().getDouble(String.format("%s.y", regionId));
             double z = getWarpPointsConfig().getDouble(String.format("%s.z", regionId));
             float yaw = (float) getWarpPointsConfig().getDouble(String.format("%s.yaw", regionId));
+            Location location = new Location(world, x, y, z, yaw, 0f);
 
             String description = getWarpPointsConfig().getString(String.format("%s.description", regionId));
 
-            Location location = new Location(world, x, y, z, yaw, 0f);
+            Set<String> discoveredBy = getWarpPointsConfig().getStringList(String.format("%s.discoveredby", regionId))
+                    .stream().collect(Collectors.toSet());
 
             RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
             RegionManager regions = container.get(BukkitAdapter.adapt(world));
             ProtectedRegion region = regions.getRegion(regionId);
 
-            warpPoint = new WarpPoint(region, location, description);
+            warpPoint = new WarpPoint(region, location, description, discoveredBy);
         }
 
         return warpPoint;
@@ -126,6 +134,7 @@ public class WarpPointsConfig {
         warpPointsConfig.set(String.format("%s.z", regionId), loc.getZ());
         warpPointsConfig.set(String.format("%s.yaw", regionId), loc.getYaw());
         warpPointsConfig.set(String.format("%s.description", regionId), warpPoint.getDescription());
+        warpPointsConfig.set(String.format("%s.discoveredby", regionId), warpPoint.getDiscoveredBy());
 
         try {
             this.warpPointsConfig.save(getWarpPointsFile());
@@ -156,8 +165,6 @@ public class WarpPointsConfig {
                 warpPointsConfig.set(regionId, null);
                 this.warpPointsConfig.save(getWarpPointsFile());
 
-                DiscoveredRegionsConfig.getInstance().removeRegionDiscoveries(regionId);
-
                 return RemoveStatus.REMOVED;
             } catch (IOException ex) {
                 RegionWarp.getInstance().getLogger()
@@ -170,6 +177,48 @@ public class WarpPointsConfig {
         } else {
             return RemoveStatus.NOT_EXISTS;
         }
+    }
+
+    /**
+     * Add a region discovery by player to Discovered Regions Config
+     * {@link FileConfiguration}
+     * 
+     * @param player   Player
+     * @param regionId Region Id
+     */
+    public void addRegionDiscovery(Player player, String regionId) {
+        Set<String> discoveredRegions = getWarpPoint(regionId).getDiscoveredBy();
+        if (discoveredRegions == null) {
+            RegionWarp.getInstance().getLogger()
+                    .severe("Hubo un error al intentar guardar una región descubierta."
+                            + " Puede ser un error interno del plugin o del servidor."
+                            + " Contactar a Brandon si sucede con frecuencia");
+
+            return;
+        }
+        discoveredRegions.add(player.getUniqueId().toString());
+
+        try {
+            List<String> list = discoveredRegions.stream().collect(Collectors.toList());
+            getWarpPointsConfig().set(String.format("%s.discoveredby", regionId), list);
+            getWarpPointsConfig().save(getWarpPointsFile());
+        } catch (IOException ex) {
+            RegionWarp.getInstance().getLogger()
+                    .severe("Hubo un error al intentar guardar una región descubierta."
+                            + " Puede ser un error interno del plugin o del servidor."
+                            + " Contactar a Brandon si sucede con frecuencia");
+        }
+    }
+
+    /**
+     * Returns true if the player has discovered the region
+     * 
+     * @param player   Player
+     * @param regionId Region Id
+     * @return true if player has discovered the region
+     */
+    public boolean hasDiscoveredRegion(Player player, String regionId) {
+        return getWarpPoint(regionId).getDiscoveredBy().contains(player.getUniqueId().toString());
     }
 
     public static WarpPointsConfig getInstance() {
