@@ -67,43 +67,6 @@ public class RegionWarp extends JavaPlugin {
 
         getCommand("regionwarp").setExecutor(regionWarpCommand);
         getCommand("rw").setExecutor(regionWarpCommand);
-
-        // TODO move teleporting to actual teleporting method
-        getCommand("test").setExecutor(new CommandExecutor() {
-            @Override
-            public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-                if (args.length != 1) {
-                    return false;
-                }
-
-                String regionId = args[0];
-
-                FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
-                String itemName = config.getString("teleportcharge.item");
-                int quantity = config.getInt("teleportcharge.quantity");
-
-                // TODO check if its actually configured or set to free
-                if (itemName == null || quantity == 0)
-                    return true; // Teleport charge might not be configured
-
-                WarpPointsConfig warpPointsConfig = WarpPointsConfig.getInstance();
-                WarpPoint warpPoint = warpPointsConfig.getWarpPoint(regionId);
-
-                Player player = ((Player) sender);
-
-                Material material = Material.matchMaterial(itemName.toUpperCase());
-
-                ItemStack itemInHand = player.getInventory().getItemInMainHand();
-                if (itemInHand.getType().equals(material) && itemInHand.getAmount() >= quantity) {
-                    itemInHand.setAmount(itemInHand.getAmount() - quantity);
-                    player.getInventory().setItemInMainHand(itemInHand);
-                    player.teleport(warpPoint.getLocation());
-                }
-
-                return true;
-            }
-
-        });
     }
 
     public File getWarpPointsFile() {

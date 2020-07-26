@@ -16,7 +16,8 @@ public class PlayerInteractListener implements Listener {
             final Player player = event.getPlayer();
 
             // TODO don't show menu if user has no permission to fast travel
-            RegionMenu.openMenu(player);
+            RegionMenu menu = new RegionMenu(player);
+            menu.openMenu();
         }
     }
 }
