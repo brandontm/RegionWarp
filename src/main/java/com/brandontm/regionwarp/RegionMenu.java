@@ -89,8 +89,10 @@ public class RegionMenu {
 
                 FileConfiguration config = RegionWarp.getInstance().getConfig();
 
-                String itemName = config.getString("teleportcharge.item");
-                int quantity = config.getInt("teleportcharge.quantity");
+                String itemName = config.getString("teleportcharge.item", Material.DIRT.toString());
+                int quantity = config.getInt("teleportcharge.quantity", 1);
+                if (quantity < 0)
+                    quantity = 0;
 
                 WarpPointsConfig warpPointsConfig = WarpPointsConfig.getInstance();
                 WarpPoint warpPoint = warpPointsConfig.getWarpPoint(regionId);
@@ -98,14 +100,13 @@ public class RegionMenu {
                 Material material = Material.matchMaterial(itemName.toUpperCase());
 
                 ItemStack itemInHand = who.getInventory().getItemInMainHand();
-
-                // if item name
-                if ((itemName == null)
-                        || (itemInHand.getType().equals(material) && itemInHand.getAmount() >= quantity)) {
-
+                if (itemInHand.getType().equals(material) && itemInHand.getAmount() >= quantity) {
+                    // charge only when config is set and quantity is bigger than 0
                     who.getInventory().setItemInMainHand(itemInHand.subtract(quantity));
+
                     who.teleport(warpPoint.getLocation());
                 }
+
                 event.setCancelled(true);
             } else {
                 // FIXME sometimes inventory is not detected in listener for some reason and
