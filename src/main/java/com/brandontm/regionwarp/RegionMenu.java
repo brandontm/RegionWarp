@@ -1,6 +1,6 @@
 package com.brandontm.regionwarp;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +55,7 @@ public class RegionMenu {
         final Inventory inventory = getInventory(who);
 
         for (WarpPoint point : WarpPointsConfig.getInstance().getAllWarpPoints()) {
+            // TODO show region initial item with player head
             ItemStack item = new ItemStack(Material.DIAMOND);
             ItemMeta meta = item.getItemMeta();
 
@@ -64,7 +65,9 @@ public class RegionMenu {
             String itemTitle = style + point.getTitle();
 
             meta.setDisplayName(itemTitle);
-            List<String> lore = Arrays.asList(ChatColor.GRAY + point.getDescription());
+            List<String> lore = new ArrayList<>();
+            lore.add(ChatColor.GRAY + point.getDescription());
+
             if (point.getDiscoveredBy().contains(who.getUniqueId().toString()))
                 lore.add(ChatColor.GRAY + "No descubierto");
 
