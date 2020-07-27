@@ -2,11 +2,13 @@ package com.brandontm.regionwarp;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import com.brandontm.regionwarp.storage.WarpPointsConfig;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -32,7 +34,7 @@ public class RegionMenu {
     public RegionMenu(HumanEntity who) {
         this.who = who;
 
-        createInventory(who);
+        createInventory();
     }
 
     public void openMenu() {
@@ -42,21 +44,31 @@ public class RegionMenu {
             who.openInventory(inventory);
     }
 
-    public void createInventory(HumanEntity who) {
+    public void createInventory() {
         final Inventory inventory = RegionWarp.getInstance().getServer().createInventory(null, 9, "Regiones");
         inventories.put(who.getUniqueId(), inventory);
 
-        draw(who);
+        draw();
     }
 
-    public void draw(HumanEntity who) {
+    public void draw() {
         final Inventory inventory = getInventory(who);
 
         for (WarpPoint point : WarpPointsConfig.getInstance().getAllWarpPoints()) {
             ItemStack item = new ItemStack(Material.DIAMOND);
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName(point.getTitle());
-            meta.setLore(Arrays.asList(point.getDescription()));
+
+            String style = (point.getDiscoveredBy().contains(who.getUniqueId().toString())) ? ChatColor.GREEN.toString()
+                    : ChatColor.GRAY.toString() + ChatColor.ITALIC.toString();
+
+            String itemTitle = style + point.getTitle();
+
+            meta.setDisplayName(itemTitle);
+            List<String> lore = Arrays.asList(ChatColor.GRAY + point.getDescription());
+            if (point.getDiscoveredBy().contains(who.getUniqueId().toString()))
+                lore.add(ChatColor.GRAY + "No descubierto");
+
+            meta.setLore(lore);
             meta.getPersistentDataContainer().set(new NamespacedKey(RegionWarp.getInstance(), "regionid"),
                     PersistentDataType.STRING, point.getRegion().getId());
 
@@ -115,11 +127,6 @@ public class RegionMenu {
 
                     who.teleport(warpPoint.getLocation());
                 }
-            } else {
-                // FIXME sometimes inventory is not detected in listener for some reason and
-                // items can be taken out from regionmenu inventory
-                who.sendMessage(inventory.toString());
-                who.sendMessage(getInventory(who).toString());
             }
         }
 
