@@ -11,6 +11,7 @@ import com.sk89q.worldguard.session.MoveType;
 import com.sk89q.worldguard.session.Session;
 import com.sk89q.worldguard.session.handler.Handler;
 
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
@@ -42,18 +43,7 @@ public class WorldGuardHandler extends Handler {
             if (warpPointsConfig.getWarpPointsConfig().isSet(region.getId())) {
                 Player player = RegionWarp.getInstance().getServer().getPlayer(lPlayer.getUniqueId());
 
-                // TODO format using WordUtils
-                String regionNameFormatted = "";
-                // Capitalize region name and replace _ and - with spaces
-                if (region.getId().length() > 0) {
-                    if (region.getId().length() == 1)
-                        regionNameFormatted = region.getId().toUpperCase();
-                    else
-                        regionNameFormatted = region.getId().substring(0, 1).toUpperCase()
-                                + region.getId().substring(1);
-
-                    regionNameFormatted = regionNameFormatted.replaceAll("[-_]", " ");
-                }
+                String regionNameFormatted = WordUtils.capitalizeFully(region.getId().replaceAll("[-_]", " "));
 
                 StringBuilder strBuilder = new StringBuilder();
                 strBuilder.append(ChatColor.AQUA);
