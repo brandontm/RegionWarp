@@ -24,6 +24,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
+import dev.dbassett.skullcreator.SkullCreator;
+
 /**
  * RegionMenu
  */
@@ -56,7 +58,9 @@ public class RegionMenu {
 
         for (WarpPoint point : WarpPointsConfig.getInstance().getAllWarpPoints()) {
             // TODO show region initial item with player head
-            ItemStack item = new ItemStack(Material.DIAMOND);
+            ItemStack item = SkullCreator.itemFromBase64(
+                    "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTY3ZDgxM2FlN2ZmZTViZTk1MWE0ZjQxZjJhYTYxOWE1ZTM4OTRlODVlYTVkNDk4NmY4NDk0OWM2M2Q3NjcyZSJ9fX0=");
+
             ItemMeta meta = item.getItemMeta();
 
             String style = (point.getDiscoveredBy().contains(who.getUniqueId().toString())) ? ChatColor.GREEN.toString()
