@@ -144,8 +144,6 @@ public class RegionMenu {
 
         @EventHandler
         public void onInventoryClose(final InventoryCloseEvent event) {
-            getInventory(event.getPlayer()).clear(); // clear region menu inventory just in case
-
             inventories.remove(event.getPlayer().getUniqueId());
         }
     }
