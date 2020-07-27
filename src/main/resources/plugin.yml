@@ -14,6 +14,28 @@ commands:
     permission-message: No tienes permiso para user este comando
 
 permissions:
+  regionwarp.warp.use:
+    description: Warp player to region
+    default: true
   regionwarp.warp.modify:
     description: Set or remove region warp points
     default: op
+  regionwarp.warp.*:
+    description: All warp permissions
+    default: op
+    children:
+      regionwarp.warp.use: true
+      regionwarp.warp.modify: true
+
+  regionwarp.signs.create:
+    description: Create region warp sign
+    default: op
+  regionwarp.signs.remove:
+    description: Create region warp sign
+    default: op
+  regionwarp.signs.*:
+    description: All signs permissions
+    default: op
+    children:
+      regionwarp.signs.create: true
+      regionwarp.signs.remove: true
