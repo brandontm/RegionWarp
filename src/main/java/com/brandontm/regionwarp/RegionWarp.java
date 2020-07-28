@@ -1,12 +1,13 @@
 package com.brandontm.regionwarp;
 
 import java.io.File;
+import java.io.IOException;
 
 import com.brandontm.regionwarp.command.RegionWarpCommand;
 import com.brandontm.regionwarp.event.BlockListener;
 import com.brandontm.regionwarp.event.PlayerInteractListener;
 import com.brandontm.regionwarp.event.SignChangeListener;
-import com.brandontm.regionwarp.storage.WarpPointsConfig;
+import com.brandontm.regionwarp.util.SkullUtil;
 import com.sk89q.worldguard.WorldGuard;
 
 import org.bukkit.Material;
@@ -33,11 +34,19 @@ public class RegionWarp extends JavaPlugin {
         if (!WorldGuard.getInstance().getPlatform().getSessionManager().registerHandler(WorldGuardHandler.factory,
                 null)) {
 
-            getLogger().severe("[RegionWarp] No se pudo registrar RegionWarp WorldGuardHandler");
-            getLogger().severe("[RegionWarp] Se desactivara el plugin");
+            getLogger().severe("No se pudo registrar RegionWarp WorldGuardHandler");
+            getLogger().severe("Se desactivara el plugin");
 
             getServer().getPluginManager().disablePlugin(this);
             return;
+        }
+
+        try {
+            SkullUtil.loadAlphabetSkulls();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            getLogger().severe("Hubo un error al intentar cargar las cabezas del menu de regiones. ");
+            getLogger().severe("No se mostrarán iniciales en el menu. Reiniciar podría solucionar este error.");
         }
 
         // Init config.yml file

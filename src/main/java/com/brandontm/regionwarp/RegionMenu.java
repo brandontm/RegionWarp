@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.brandontm.regionwarp.storage.WarpPointsConfig;
+import com.brandontm.regionwarp.util.SkullUtil;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -23,8 +24,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
-
-import dev.dbassett.skullcreator.SkullCreator;
 
 /**
  * RegionMenu
@@ -57,9 +56,20 @@ public class RegionMenu {
         final Inventory inventory = getInventory(who);
 
         for (WarpPoint point : WarpPointsConfig.getInstance().getAllWarpPoints()) {
-            // TODO show region initial item with player head
-            ItemStack item = SkullCreator.itemFromBase64(
-                    "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTY3ZDgxM2FlN2ZmZTViZTk1MWE0ZjQxZjJhYTYxOWE1ZTM4OTRlODVlYTVkNDk4NmY4NDk0OWM2M2Q3NjcyZSJ9fX0=");
+            ItemStack item = null;
+
+            if (SkullUtil.getCharacterUrl(point.getTitle().charAt(0)) == null) {
+                // For some reason alphabet skull URLs are not configured
+                // Fallback to default items
+
+                if (point.getDiscoveredBy().contains(who.getUniqueId().toString())) {
+                    item = new ItemStack(Material.SLIME_BALL);
+                } else {
+                    item = new ItemStack(Material.GRAY_DYE);
+                }
+            } else {
+                item = SkullUtil.itemFromUrl(SkullUtil.getCharacterUrl(point.getTitle().charAt(0)));
+            }
 
             ItemMeta meta = item.getItemMeta();
 
