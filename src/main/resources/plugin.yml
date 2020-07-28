@@ -11,12 +11,12 @@ commands:
     usage: /regionwarp <set|remove> <regionName> [description...]
     aliases: [rw]
     permission: regionwarp.warp.modify
-    permission-message: No tienes permiso para user este comando
+    permission-message: No tienes permiso para usar este comando
   setstation:
     description: Marcar letrero como estación de teleportación
     usage: /setstation
     permission: regionwarp.station.create
-    permission-message: No tienes permiso para user este comando
+    permission-message: No tienes permiso para usar este comando
 
 permissions:
   regionwarp.warp.use:
