@@ -16,28 +16,31 @@ public class BlockListener implements Listener {
         final Block block = event.getBlock();
         final Player player = event.getPlayer();
 
-        // check if broken block is a regionwarp sign
-        if (SignUtil.isRegionWarpSign(block) && !player.isOp())
-            event.setCancelled(true);
+        // ignore checks if user has permission to remove travel stations
+        if (player.hasPermission("regionwarp.station.remove"))
+            return;
 
-        // check if breaking block would destroy regionwarp sign
-        if (SignUtil.isRegionWarpSign(block.getRelative(BlockFace.UP))
-                && Tag.STANDING_SIGNS.isTagged(block.getRelative(BlockFace.UP).getType()) && !player.isOp()) {
-
+        // check if broken block is a travel station sign
+        if (SignUtil.isRegionWarpSign(block)) {
             event.setCancelled(true);
         } else {
-            final BlockFace[] directions = new BlockFace[] { BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH,
-                    BlockFace.WEST };
+            // check if breaking block would destroy travel station sign
+            if (SignUtil.isRegionWarpSign(block.getRelative(BlockFace.UP))
+                    && Tag.STANDING_SIGNS.isTagged(block.getRelative(BlockFace.UP).getType())) {
 
-            for (BlockFace direction : directions) {
-                final Block adjBlock = block.getRelative(direction);
-                if (Tag.WALL_SIGNS.isTagged(adjBlock.getType()) && SignUtil.isRegionWarpSign(adjBlock)
-                        && !player.isOp()) {
+                event.setCancelled(true);
+            } else {
+                final BlockFace[] directions = new BlockFace[] { BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH,
+                        BlockFace.WEST };
 
-                    event.setCancelled(true);
+                for (BlockFace direction : directions) {
+                    final Block adjBlock = block.getRelative(direction);
+                    if (Tag.WALL_SIGNS.isTagged(adjBlock.getType()) && SignUtil.isRegionWarpSign(adjBlock)) {
+
+                        event.setCancelled(true);
+                    }
                 }
             }
         }
-        //
     }
 }
