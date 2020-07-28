@@ -9,6 +9,7 @@ import java.util.UUID;
 import com.brandontm.regionwarp.storage.WarpPointsConfig;
 
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -94,7 +95,7 @@ public class RegionMenu {
     public static class InventoryListener implements Listener {
         @EventHandler
         public void onInventoryClick(final InventoryClickEvent event) {
-            HumanEntity who = event.getWhoClicked();
+            final HumanEntity who = event.getWhoClicked();
             final Inventory inventory = RegionMenu.getInventory(who);
 
             if (event.getInventory().equals(inventory) && event.getCurrentItem() != null) {
@@ -103,34 +104,40 @@ public class RegionMenu {
                 if (!(who instanceof Player))
                     return;
 
-                ItemMeta meta = event.getCurrentItem().getItemMeta();
+                final ItemMeta meta = event.getCurrentItem().getItemMeta();
                 if (meta == null || !meta.getPersistentDataContainer()
                         .has(new NamespacedKey(RegionWarp.getInstance(), "regionid"), PersistentDataType.STRING))
                     return;
 
-                String regionId = meta.getPersistentDataContainer()
+                final String regionId = meta.getPersistentDataContainer()
                         .get(new NamespacedKey(RegionWarp.getInstance(), "regionid"), PersistentDataType.STRING);
 
                 if (!WarpPointsConfig.getInstance().hasDiscoveredRegion((Player) who, regionId))
                     return;
 
-                FileConfiguration config = RegionWarp.getInstance().getConfig();
+                final FileConfiguration config = RegionWarp.getInstance().getConfig();
 
-                String itemName = config.getString("teleportcharge.item", Material.DIRT.toString());
+                final String itemName = config.getString("teleportcharge.item", Material.DIRT.toString());
                 int quantity = config.getInt("teleportcharge.quantity", -1);
                 if (quantity < 0)
                     quantity = 0;
 
-                WarpPointsConfig warpPointsConfig = WarpPointsConfig.getInstance();
-                WarpPoint warpPoint = warpPointsConfig.getWarpPoint(regionId);
+                final WarpPointsConfig warpPointsConfig = WarpPointsConfig.getInstance();
+                final WarpPoint warpPoint = warpPointsConfig.getWarpPoint(regionId);
 
-                Material material = Material.matchMaterial(itemName.toUpperCase());
+                final Material material = Material.matchMaterial(itemName.toUpperCase());
 
-                ItemStack itemInHand = who.getInventory().getItemInMainHand();
+                final ItemStack itemInHand = who.getInventory().getItemInMainHand();
 
-                // ignore item in hand if teleporting is free
-                if (quantity == 0 || (itemInHand.getType().equals(material) && itemInHand.getAmount() >= quantity)) {
-                    who.getInventory().setItemInMainHand(itemInHand.subtract(quantity));
+                // ignore item in hand if teleporting is free, player is in creative mode
+                // or has charge bypass permission
+                if (quantity == 0 || who.hasPermission("regionwarp.warp.bypasscharge")
+                        || GameMode.CREATIVE.equals(who.getGameMode())
+                        || (itemInHand.getType().equals(material) && itemInHand.getAmount() >= quantity)) {
+
+                    if (!(quantity == 0 || who.hasPermission("regionwarp.warp.bypasscharge")
+                            || GameMode.CREATIVE.equals(who.getGameMode())))
+                        who.getInventory().setItemInMainHand(itemInHand.subtract(quantity));
 
                     who.teleport(warpPoint.getLocation());
                 }
