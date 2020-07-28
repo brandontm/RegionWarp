@@ -13,14 +13,14 @@ public class SignChangeListener implements Listener {
         if ("[regionwarp]".equals(event.getLine(0).trim().toLowerCase())
                 || "[rw]".equals(event.getLine(0).trim().toLowerCase())) {
 
-            if (event.getPlayer().isOp()) {
-                event.setLine(0, ChatColor.DARK_BLUE + "[RegionWarp]");
-                event.setLine(2, "Click derecho");
-                event.setLine(3, "para abrir menu");
-
-            } else {
+            if (!event.getPlayer().hasPermission("regionwarp.station.create")) {
                 event.setCancelled(true);
+                return;
             }
+
+            event.setLine(0, ChatColor.DARK_BLUE + "[RegionWarp]");
+            event.setLine(2, "Click derecho");
+            event.setLine(3, "para abrir menu");
         }
     }
 }
