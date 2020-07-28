@@ -19,8 +19,6 @@ public class SignChangeListener implements Listener {
             }
 
             event.setLine(0, ChatColor.DARK_BLUE + "[RegionWarp]");
-            event.setLine(2, "Click derecho");
-            event.setLine(3, "para abrir menu");
         }
     }
 }
