@@ -22,7 +22,9 @@ public class PlayerInteractListener implements Listener {
                 return;
             }
 
-            if (!RegionWarp.getInstance().playerHasChargeInHand(player)) {
+            if (!RegionWarp.getInstance().playerHasChargeInHand(player)
+                    && RegionWarp.getInstance().shouldPlayerBeCharged(player)) {
+
                 player.sendMessage(ChatColor.RED + "No tienes la cuota en mano");
                 return;
             }

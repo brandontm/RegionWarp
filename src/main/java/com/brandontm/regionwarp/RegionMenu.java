@@ -9,10 +9,8 @@ import java.util.UUID;
 import com.brandontm.regionwarp.storage.WarpPointsConfig;
 
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -95,52 +93,43 @@ public class RegionMenu {
     public static class InventoryListener implements Listener {
         @EventHandler
         public void onInventoryClick(final InventoryClickEvent event) {
-            final HumanEntity who = event.getWhoClicked();
-            final Inventory inventory = RegionMenu.getInventory(who);
+            if (!(event.getWhoClicked() instanceof Player))
+                return;
+
+            final Player player = (Player) event.getWhoClicked();
+
+            final Inventory inventory = RegionMenu.getInventory(player);
 
             if (event.getInventory().equals(inventory) && event.getCurrentItem() != null) {
                 event.setCancelled(true);
 
-                if (!(who instanceof Player))
-                    return;
+                final RegionWarp plugin = RegionWarp.getInstance();
 
                 final ItemMeta meta = event.getCurrentItem().getItemMeta();
-                if (meta == null || !meta.getPersistentDataContainer()
-                        .has(new NamespacedKey(RegionWarp.getInstance(), "regionid"), PersistentDataType.STRING))
+                if (meta == null || !meta.getPersistentDataContainer().has(new NamespacedKey(plugin, "regionid"),
+                        PersistentDataType.STRING))
                     return;
 
-                final String regionId = meta.getPersistentDataContainer()
-                        .get(new NamespacedKey(RegionWarp.getInstance(), "regionid"), PersistentDataType.STRING);
+                final String regionId = meta.getPersistentDataContainer().get(new NamespacedKey(plugin, "regionid"),
+                        PersistentDataType.STRING);
 
-                if (!WarpPointsConfig.getInstance().hasDiscoveredRegion((Player) who, regionId)
-                        && !who.hasPermission("regionwarp.warp.bypassdiscovery"))
+                if (!WarpPointsConfig.getInstance().hasDiscoveredRegion(player, regionId)
+                        && !player.hasPermission("regionwarp.warp.bypassdiscovery"))
                     return;
-
-                final FileConfiguration config = RegionWarp.getInstance().getConfig();
-
-                final String itemName = config.getString("teleportcharge.item", Material.DIRT.toString());
-                int quantity = config.getInt("teleportcharge.quantity", -1);
-                if (quantity < 0)
-                    quantity = 0;
 
                 final WarpPointsConfig warpPointsConfig = WarpPointsConfig.getInstance();
                 final WarpPoint warpPoint = warpPointsConfig.getWarpPoint(regionId);
 
-                final Material material = Material.matchMaterial(itemName.toUpperCase());
+                final ItemStack itemInHand = player.getInventory().getItemInMainHand();
 
-                final ItemStack itemInHand = who.getInventory().getItemInMainHand();
+                // ignore item in hand if player should not be charged
+                if (!plugin.shouldPlayerBeCharged(player) || plugin.playerHasChargeInHand(player)) {
 
-                // ignore item in hand if teleporting is free, player is in creative mode
-                // or has charge bypass permission
-                if (quantity == 0 || who.hasPermission("regionwarp.warp.bypasscharge")
-                        || GameMode.CREATIVE.equals(who.getGameMode())
-                        || (itemInHand.getType().equals(material) && itemInHand.getAmount() >= quantity)) {
+                    if (plugin.shouldPlayerBeCharged(player))
+                        player.getInventory()
+                                .setItemInMainHand(itemInHand.subtract(plugin.getChargeItemStack().getAmount()));
 
-                    if (!(quantity == 0 || who.hasPermission("regionwarp.warp.bypasscharge")
-                            || GameMode.CREATIVE.equals(who.getGameMode())))
-                        who.getInventory().setItemInMainHand(itemInHand.subtract(quantity));
-
-                    who.teleport(warpPoint.getLocation());
+                    player.teleport(warpPoint.getLocation());
                 }
             }
         }

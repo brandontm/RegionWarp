@@ -8,6 +8,7 @@ import com.brandontm.regionwarp.event.PlayerInteractListener;
 import com.brandontm.regionwarp.event.SignChangeListener;
 import com.sk89q.worldguard.WorldGuard;
 
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -63,7 +64,36 @@ public class RegionWarp extends JavaPlugin {
         getCommand("rw").setExecutor(regionWarpCommand);
     }
 
+    /**
+     * Check if player has station charge fee in hand
+     * 
+     * @param player Player to check
+     * @return true if player has station charge fee in hand
+     */
     public boolean playerHasChargeInHand(Player player) {
+        final ItemStack chargeItem = getChargeItemStack();
+
+        final ItemStack itemInHand = player.getInventory().getItemInMainHand();
+        return (itemInHand.getType().equals(chargeItem.getType()) && itemInHand.getAmount() >= chargeItem.getAmount());
+    }
+
+    /**
+     * Check if player should be charged the station charge fee
+     * 
+     * @param player Player to check
+     * @return true if player should be charged
+     */
+    public boolean shouldPlayerBeCharged(Player player) {
+        return (player.hasPermission("regionwarp.warp.bypasscharge") || GameMode.CREATIVE.equals(player.getGameMode())
+                || getChargeItemStack().getAmount() == 0);
+    }
+
+    /**
+     * Get station charge fee {@link ItemStack}
+     * 
+     * @return Station charge fee {@link ItemStack}
+     */
+    public ItemStack getChargeItemStack() {
         final FileConfiguration config = RegionWarp.getInstance().getConfig();
 
         final String itemName = config.getString("teleportcharge.item", Material.DIRT.toString());
@@ -73,8 +103,7 @@ public class RegionWarp extends JavaPlugin {
 
         final Material material = Material.matchMaterial(itemName.toUpperCase());
 
-        final ItemStack itemInHand = player.getInventory().getItemInMainHand();
-        return (itemInHand.getType().equals(material) && itemInHand.getAmount() >= quantity);
+        return new ItemStack(material, quantity);
     }
 
     public File getWarpPointsFile() {
