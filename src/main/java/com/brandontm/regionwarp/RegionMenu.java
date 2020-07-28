@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.brandontm.regionwarp.storage.WarpPointsConfig;
-import com.brandontm.regionwarp.util.SkullUtil;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -58,17 +57,10 @@ public class RegionMenu {
         for (WarpPoint point : WarpPointsConfig.getInstance().getAllWarpPoints()) {
             ItemStack item = null;
 
-            if (SkullUtil.getCharacterUrl(point.getTitle().charAt(0)) == null) {
-                // For some reason alphabet skull URLs are not configured
-                // Fallback to default items
-
-                if (point.getDiscoveredBy().contains(who.getUniqueId().toString())) {
-                    item = new ItemStack(Material.SLIME_BALL);
-                } else {
-                    item = new ItemStack(Material.GRAY_DYE);
-                }
+            if (point.getDiscoveredBy().contains(who.getUniqueId().toString())) {
+                item = new ItemStack(Material.GRASS_BLOCK);
             } else {
-                item = SkullUtil.itemFromUrl(SkullUtil.getCharacterUrl(point.getTitle().charAt(0)));
+                item = new ItemStack(Material.GRAY_STAINED_GLASS);
             }
 
             ItemMeta meta = item.getItemMeta();
@@ -81,9 +73,6 @@ public class RegionMenu {
             meta.setDisplayName(itemTitle);
             List<String> lore = new ArrayList<>();
             lore.add(ChatColor.GRAY + point.getDescription());
-
-            if (point.getDiscoveredBy().contains(who.getUniqueId().toString()))
-                lore.add(ChatColor.GRAY + "No descubierto");
 
             meta.setLore(lore);
             meta.getPersistentDataContainer().set(new NamespacedKey(RegionWarp.getInstance(), "regionid"),
