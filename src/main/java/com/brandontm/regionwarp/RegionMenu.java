@@ -112,7 +112,8 @@ public class RegionMenu {
                 final String regionId = meta.getPersistentDataContainer()
                         .get(new NamespacedKey(RegionWarp.getInstance(), "regionid"), PersistentDataType.STRING);
 
-                if (!WarpPointsConfig.getInstance().hasDiscoveredRegion((Player) who, regionId))
+                if (!WarpPointsConfig.getInstance().hasDiscoveredRegion((Player) who, regionId)
+                        && !who.hasPermission("regionwarp.warp.bypassdiscovery"))
                     return;
 
                 final FileConfiguration config = RegionWarp.getInstance().getConfig();
