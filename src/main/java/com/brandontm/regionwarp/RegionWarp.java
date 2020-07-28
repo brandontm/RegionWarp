@@ -84,8 +84,8 @@ public class RegionWarp extends JavaPlugin {
      * @return true if player should be charged
      */
     public boolean shouldPlayerBeCharged(Player player) {
-        return (player.hasPermission("regionwarp.warp.bypasscharge") || GameMode.CREATIVE.equals(player.getGameMode())
-                || getChargeItemStack().getAmount() == 0);
+        return (!player.hasPermission("regionwarp.warp.bypasscharge") && !GameMode.CREATIVE.equals(player.getGameMode())
+                && getChargeItemStack().getAmount() != 0);
     }
 
     /**
