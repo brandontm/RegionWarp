@@ -8,14 +8,9 @@ depend: [WorldGuard]
 commands:
   regionWarp:
     description: Crear o remover punto de teleportación de la región
-    usage: /regionwarp <set|remove> <regionName> [description...]
+    usage: §c/regionwarp <set|remove>
     aliases: [rw]
     permission: regionwarp.warp.modify
-    permission-message: No tienes permiso para usar este comando
-  setstation:
-    description: Marcar letrero como estación de teleportación
-    usage: /setstation
-    permission: regionwarp.station.create
     permission-message: No tienes permiso para usar este comando
 
 permissions:
