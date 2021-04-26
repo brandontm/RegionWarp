@@ -7,13 +7,43 @@ depend: [WorldGuard]
 
 commands:
   regionWarp:
-    description: Set or remove region warp point
-    usage: /regionwarp <set|remove> <regionName> [description...]
+    description: Crear o remover punto de teleportación de la región
+    usage: §c/regionwarp <set|remove>
     aliases: [rw]
     permission: regionwarp.warp.modify
-    permission-message: No tienes permiso para user este comando
+    permission-message: No tienes permiso para usar este comando
 
 permissions:
+  regionwarp.warp.use:
+    description: Teletransportar usuario a región
+    default: true
   regionwarp.warp.modify:
-    description: Set or remove region warp points
+    description: Crear o remover punto de teleportación de la región
     default: op
+  regionwarp.warp.bypasscharge:
+    description: Ignorar tarifa para teletransportar usuario. No se le cobra.
+    default: op
+  regionwarp.warp.bypassdiscovery:
+    description: Ignorar descubrimiento para teletransportar usuario.
+    default: op
+  regionwarp.warp.*:
+    description: Todos los permisos de 'warp'
+    default: op
+    children:
+      regionwarp.warp.use: true
+      regionwarp.warp.modify: true
+      regionwarp.warp.bypasscharge: true
+      regionwarp.warp.bypassdiscovery: true
+
+  regionwarp.station.create:
+    description: Marcar letrero como estación de teleportación
+    default: op
+  regionwarp.station.remove:
+    description: Remover estación de teleportación
+    default: op
+  regionwarp.station.*:
+    description: Todos los permisos de estación
+    default: op
+    children:
+      regionwarp.station.create: true
+      regionwarp.station.remove: true

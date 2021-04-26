@@ -24,12 +24,11 @@ public class RegionWarpCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (args.length < 2) {
+        if (args.length < 1) {
             return false;
         }
 
         final String operation = args[0];
-        final String regionName = args[1];
 
         WarpPointsConfig warpPointsConfig = WarpPointsConfig.getInstance();
 
@@ -39,9 +38,11 @@ public class RegionWarpCommand implements CommandExecutor {
                 return true;
             }
 
-            if (!(args.length > 2)) {
-                return false;
+            if (args.length != 3) {
+                sender.sendMessage(ChatColor.RED + "/regionwarp set <region> <description>");
+                return true;
             }
+            final String regionName = args[1];
 
             // Every argument after the second is part of the description
             String description = "";
@@ -88,10 +89,6 @@ public class RegionWarpCommand implements CommandExecutor {
 
             return true;
         } else if ("remove".equals(operation)) {
-            if (args.length != 2) {
-                return false;
-            }
-
             if (sender instanceof Player) {
                 Player player = (Player) sender;
                 if (!player.hasPermission("regionwarp.warp.remove")) {
@@ -100,6 +97,13 @@ public class RegionWarpCommand implements CommandExecutor {
                     return true;
                 }
             }
+
+            if (args.length != 2) {
+                sender.sendMessage(ChatColor.RED + "/regionwarp remove <region>");
+                return true;
+            }
+            final String regionName = args[1];
+
             RemoveStatus removeStatus = warpPointsConfig.removeWarpPoint(regionName);
 
             String message = "";

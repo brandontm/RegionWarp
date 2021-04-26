@@ -2,7 +2,6 @@ package com.brandontm.regionwarp;
 
 import java.util.Set;
 
-import com.brandontm.regionwarp.storage.DiscoveredRegionsConfig;
 import com.brandontm.regionwarp.storage.WarpPointsConfig;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldguard.LocalPlayer;
@@ -12,6 +11,7 @@ import com.sk89q.worldguard.session.MoveType;
 import com.sk89q.worldguard.session.Session;
 import com.sk89q.worldguard.session.handler.Handler;
 
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
@@ -38,23 +38,12 @@ public class WorldGuardHandler extends Handler {
     public boolean onCrossBoundary(LocalPlayer lPlayer, Location from, Location to, ApplicableRegionSet toSet,
             Set<ProtectedRegion> entered, Set<ProtectedRegion> exited, MoveType moveType) {
 
-        DiscoveredRegionsConfig discoveredRegionsConfig = DiscoveredRegionsConfig.getInstance();
         for (ProtectedRegion region : entered) {
             WarpPointsConfig warpPointsConfig = WarpPointsConfig.getInstance();
             if (warpPointsConfig.getWarpPointsConfig().isSet(region.getId())) {
                 Player player = RegionWarp.getInstance().getServer().getPlayer(lPlayer.getUniqueId());
 
-                String regionNameFormatted = "";
-                // Capitalize region name and replace _ and - with spaces
-                if (region.getId().length() > 0) {
-                    if (region.getId().length() == 1)
-                        regionNameFormatted = region.getId().toUpperCase();
-                    else
-                        regionNameFormatted = region.getId().substring(0, 1).toUpperCase()
-                                + region.getId().substring(1);
-
-                    regionNameFormatted = regionNameFormatted.replaceAll("[-_]", " ");
-                }
+                String regionNameFormatted = WordUtils.capitalizeFully(region.getId().replaceAll("[-_]", " "));
 
                 StringBuilder strBuilder = new StringBuilder();
                 strBuilder.append(ChatColor.AQUA);
@@ -66,8 +55,8 @@ public class WorldGuardHandler extends Handler {
                 player.sendTitle("", subtitle, 10, 50, 10);
                 player.sendActionBar(ChatColor.GOLD + description);
 
-                if (!discoveredRegionsConfig.hasDiscoveredRegion(player, region.getId())) {
-                    discoveredRegionsConfig.addRegionDiscovery(player, region.getId());
+                if (!warpPointsConfig.hasDiscoveredRegion(player, region.getId())) {
+                    warpPointsConfig.addRegionDiscovery(player, region.getId());
 
                     player.sendMessage(ChatColor.AQUA + "Has descubierto la región " + ChatColor.BOLD.toString()
                             + ChatColor.GOLD.toString() + regionNameFormatted + ".");

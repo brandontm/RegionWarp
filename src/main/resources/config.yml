@@ -1,0 +1,6 @@
+# Configuration File
+
+# Item que será cobrado al usuario por cada viaje rápido
+teleportcharge:
+    item: dirt
+    quantity: 1
